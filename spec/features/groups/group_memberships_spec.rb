@@ -167,5 +167,29 @@ describe 'group memberships through groups page', js: true do
       expect(members_page2).not_to have_group 'A-Team'
       expect(members_page2).not_to have_user 'Hannibal Smith'
     end
+
+    context 'with an archived project' do
+      let!(:archived_project) do
+        create(:project,
+               name: 'Archived project',
+               identifier: 'archived_project')
+      end
+
+      let!(:other_project) do
+        create(:project,
+               name: 'Other project',
+               identifier: 'other_project')
+      end
+
+      fit 'can only a add the group to active projects in which the group is not yet a member' do
+        group_page.visit!
+        group_page.open_projects_tab!
+
+        # expect(group_page.select_project!("Project 1").size).to eql 0
+        # expect(group_page.select_project!("Archived project").size).to eql 0
+        binding.pry
+        expect(group_page.select_project!("Other project").size).to eql 1
+      end
+    end
   end
 end
