@@ -86,7 +86,7 @@ RSpec.describe "Immediate reminder settings", js: true do
               </mention>
         NOTE
 
-        work_package.add_journal(current_user, note)
+        work_package.add_journal(user: current_user, notes: note)
         work_package.save!
       end
 
