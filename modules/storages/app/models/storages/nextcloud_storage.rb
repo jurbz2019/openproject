@@ -36,6 +36,17 @@ class Storages::NextcloudStorage < Storages::Storage
 
   alias_method :has_managed_project_folders?, :has_managed_project_folders
 
+  def self.sync_all_group_folders
+    ApplicationRecord.with_advisory_lock('nextcloud_storages_sync', timeout_seconds: 0) do
+      where("provider_fields->>'has_managed_project_folders' = 'true'")
+          .includes(:oauth_client)
+          .each do |storage|
+        Storages::GroupFolderPropertiesSyncService.new(storage).call
+      end
+      true
+    end
+  end
+
   def group
     super || "OpenProject"
   end
