@@ -586,7 +586,7 @@ module Journals
 
     def cause_sql(cause)
       # Using the same encoder mechanism that ActiveRecord uses for json/jsonb columns
-      ActiveSupport::JSON.encode(cause || {})
+      ActiveSupport::JSON.encode(cause&.to_h || {})
     end
 
     def timestamp_sql

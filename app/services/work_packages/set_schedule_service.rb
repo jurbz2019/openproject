@@ -189,23 +189,15 @@ class WorkPackages::SetScheduleService
     end
   end
 
-  def assign_cause_initiated_by_work_package(work_package, relation)
-    type_mapping = {
-      parent: 'work_package_parent_changed_times',
-      children: 'work_package_children_changed_times',
-      predecessor: 'work_package_predecessor_changed_times'
-    }
-
-    work_package.journal_cause = {
-      "type" => type_mapping[relation],
-      "work_package_id" => initiated_by.id
-    }
+  def assign_cause_initiated_by_work_package(_work_package, relation)
+    work_packge.journal_cause = case relation
+                                when :parent then Journal::CausedByWorkPackageParentChange.new(initated_by)
+                                when :children then Journal::CausedByWorkPackageChildChange.new(initated_by)
+                                when :predecessor then Jorunal::CausedByWorkPackagePredecessorChange.new(initated_by)
+                                end
   end
 
   def assign_cause_initiated_by_changed_working_days(work_package)
-    work_package.journal_cause = {
-      "type" => 'working_days_changed',
-      "changed_days" => initiated_by.to_h
-    }
+    work_package.journal_cause = Journal::CausedByWorkingDayChanges.new(**initated_by.to_h)
   end
 end
