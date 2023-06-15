@@ -47,6 +47,10 @@ module Pages::Meetings
       fill_in 'Title', with: text
     end
 
+    def set_project(project)
+      select project.name, from: 'Project'
+    end
+
     def set_start_date(date)
       find_by_id('meeting_start_date').click
       datepicker = Components::BasicDatepicker.new
