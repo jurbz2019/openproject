@@ -189,12 +189,12 @@ class WorkPackages::SetScheduleService
     end
   end
 
-  def assign_cause_initiated_by_work_package(_work_package, relation)
-    work_packge.journal_cause = case relation
-                                when :parent then Journal::CausedByWorkPackageParentChange.new(initated_by)
-                                when :children then Journal::CausedByWorkPackageChildChange.new(initated_by)
-                                when :predecessor then Jorunal::CausedByWorkPackagePredecessorChange.new(initated_by)
-                                end
+  def assign_cause_initiated_by_work_package(work_package, relation)
+    work_package.journal_cause = case relation
+                                 when :parent then Journal::CausedByWorkPackageParentChange.new(initiated_by)
+                                 when :children then Journal::CausedByWorkPackageChildChange.new(initiated_by)
+                                 when :predecessor then Journal::CausedByWorkPackagePredecessorChange.new(initiated_by)
+                                 end
   end
 
   def assign_cause_initiated_by_changed_working_days(work_package)
