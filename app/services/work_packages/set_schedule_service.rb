@@ -198,6 +198,6 @@ class WorkPackages::SetScheduleService
   end
 
   def assign_cause_initiated_by_changed_working_days(work_package)
-    work_package.journal_cause = Journal::CausedByWorkingDayChanges.new(**initated_by.to_h)
+    work_package.journal_cause = Journal::CausedByWorkingDayChanges.new(initiated_by)
   end
 end
