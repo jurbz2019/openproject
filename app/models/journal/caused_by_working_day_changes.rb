@@ -27,9 +27,12 @@
 #++
 
 class Journal::CausedByWorkingDayChanges < CauseOfChange::Base
-  def initialize(changed_days)
+  def initialize(working_days:, non_working_days:)
     additional = {
-      "changed_days" => changed_days
+      "changed_days" => {
+        "working_days" => working_days,
+        "non_working_days" => non_working_days.transform_keys(&:iso8601)
+      }
     }
     super('working_days_changed', additional)
   end

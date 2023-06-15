@@ -184,8 +184,8 @@ class WorkPackages::SetScheduleService
 
     if initiated_by.is_a?(WorkPackage)
       assign_cause_initiated_by_work_package(work_package, relation)
-    elsif initiated_by.is_a?(Journal::WorkingDayUpdate)
-      assign_cause_initiated_by_changed_working_days(work_package)
+    elsif initiated_by.is_a?(CauseOfChange::Base)
+      work_package.journal_cause = initiated_by
     end
   end
 
@@ -195,9 +195,5 @@ class WorkPackages::SetScheduleService
                                  when :children then Journal::CausedByWorkPackageChildChange.new(initiated_by)
                                  when :predecessor then Journal::CausedByWorkPackagePredecessorChange.new(initiated_by)
                                  end
-  end
-
-  def assign_cause_initiated_by_changed_working_days(work_package)
-    work_package.journal_cause = Journal::CausedByWorkingDayChanges.new(initiated_by)
   end
 end
