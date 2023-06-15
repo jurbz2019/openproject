@@ -48,6 +48,7 @@ RSpec.describe WorkPackage do
                duration: 1)
       end
     end
+    let(:other_work_package) { build_stubbed(:work_package) }
 
     current_user { create(:user) }
 
@@ -459,10 +460,7 @@ RSpec.describe WorkPackage do
       subject do
         work_package.add_journal(
           user: User.current,
-          cause: {
-            type: 'work_package_predecessor_changed_times',
-            work_package_id: 42
-          }
+          cause: Journal::CausedByWorkPackagePredecessorChange.new(other_work_package)
         )
         work_package.save
       end
@@ -482,10 +480,7 @@ RSpec.describe WorkPackage do
         work_package.add_journal(
           user: User.current,
           notes: 'some notes',
-          cause: {
-            type: 'work_package_predecessor_changed_times',
-            work_package_id: 42
-          }
+          cause: Journal::CausedByWorkPackagePredecessorChange.new(other_work_package)
         )
         work_package.subject = 'blubs'
         work_package.save
@@ -504,7 +499,7 @@ RSpec.describe WorkPackage do
 
         expect(work_package.last_journal.notes).to eq('some notes')
         expect(work_package.last_journal.cause_type).to eq('work_package_predecessor_changed_times')
-        expect(work_package.last_journal.cause_work_package_id).to eq(42)
+        expect(work_package.last_journal.cause_work_package_id).to eq(other_work_package.id)
       end
     end
 
@@ -512,10 +507,7 @@ RSpec.describe WorkPackage do
       before do
         work_package.add_journal(
           user: User.current,
-          cause: {
-            type: 'work_package_predecessor_changed_times',
-            work_package_id: 42
-          }
+          cause: Journal::CausedByWorkPackagePredecessorChange.new(other_work_package)
         )
         work_package.subject = "new subject 1"
         work_package.save
@@ -524,10 +516,7 @@ RSpec.describe WorkPackage do
       subject do
         work_package.add_journal(
           user: User.current,
-          cause: {
-            type: 'work_package_predecessor_changed_times',
-            work_package_id: 42
-          }
+          cause: Journal::CausedByWorkPackagePredecessorChange.new(other_work_package)
         )
         work_package.subject = "new subject 2"
         work_package.save
@@ -542,7 +531,7 @@ RSpec.describe WorkPackage do
 
         expect(work_package.last_journal.new_value_for(:subject)).to eq('new subject 2')
         expect(work_package.last_journal.cause_type).to eq('work_package_predecessor_changed_times')
-        expect(work_package.last_journal.cause_work_package_id).to eq(42)
+        expect(work_package.last_journal.cause_work_package_id).to eq(other_work_package.id)
       end
     end
 

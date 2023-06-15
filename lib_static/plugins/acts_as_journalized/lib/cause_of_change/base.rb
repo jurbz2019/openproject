@@ -36,7 +36,11 @@ module CauseOfChange
     end
 
     def to_h
-      { type: }.merge(additional_attributes).deep_stringify_keys
+      { "type" => type }.merge(additional_attributes).deep_stringify_keys
+    end
+
+    def blank?
+      false
     end
 
     def ==(other)

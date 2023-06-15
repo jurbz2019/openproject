@@ -32,6 +32,10 @@ module CauseOfChange
       super(nil)
     end
 
+    def blank?
+      true
+    end
+
     def to_h
       {}
     end
