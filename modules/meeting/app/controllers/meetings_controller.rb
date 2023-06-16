@@ -28,6 +28,7 @@
 
 class MeetingsController < ApplicationController
   around_action :set_time_zone
+  before_action :set_global_create_context, only: %i[new]
   before_action :find_optional_project, only: %i[index new create]
   before_action :build_meeting, only: %i[new create]
   before_action :find_meeting, except: %i[index new create]
@@ -122,6 +123,12 @@ class MeetingsController < ApplicationController
     end
 
     Time.use_zone(zone, &)
+  end
+
+  def set_global_create_context
+    if global_create_context?
+      @global_create_context = true
+    end
   end
 
   def build_meeting
