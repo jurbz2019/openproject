@@ -441,6 +441,12 @@ Redmine::MenuManager.map :project_menu do |menu|
             if: Proc.new { |p| p.module_enabled?('activity') },
             icon: 'checkmark'
 
+  menu.push :activity_filters,
+            { controller: '/activities', action: 'index' },
+            if: Proc.new { |p| p.module_enabled?('activity') },
+            parent: :activity,
+            partial: 'activities/filters_menu'
+
   menu.push :roadmap,
             { controller: '/versions', action: 'index' },
             if: Proc.new { |p| p.shared_versions.any? },

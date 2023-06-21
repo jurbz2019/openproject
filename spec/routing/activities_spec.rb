@@ -53,5 +53,11 @@ RSpec.describe ActivitiesController, 'routing' do
                                                              project_id: 'abc',
                                                              format: 'atom')
     }
+
+    it {
+      expect(get('/projects/abc/activity/menu')).to route_to(controller: 'activities',
+                                                             action: 'menu',
+                                                             project_id: 'abc')
+    }
   end
 end

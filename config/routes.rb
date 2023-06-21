@@ -264,7 +264,11 @@ OpenProject::Application.routes.draw do
       get '(/*state)' => 'work_packages#show', on: :member, as: ''
     end
 
-    resources :activity, :activities, only: :index, controller: 'activities'
+    resources :activity, :activities, only: :index, controller: 'activities' do
+      collection do
+        get :menu
+      end
+    end
 
     resources :forums do
       member do

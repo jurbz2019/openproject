@@ -30,22 +30,19 @@ class ActivitiesController < ApplicationController
   menu_item :activity
   before_action :find_optional_project,
                 :verify_activities_module_activated,
-                :determine_date_range,
-                :determine_subprojects,
+                :set_activity,
+                :determine_subprojects
+
+  before_action :determine_date_range,
                 :determine_author,
-                :set_current_activity_page
+                :set_current_activity_page,
+                only: :index
 
   after_action :set_session
 
   accept_key_auth :index
 
   def index
-    @activity = Activities::Fetcher.new(User.current,
-                                        project: @project,
-                                        with_subprojects: @with_subprojects,
-                                        author: @author,
-                                        scope: activity_scope)
-
     @events = @activity.events(from: @date_from.to_datetime, to: @date_to.to_datetime)
 
     respond_to do |format|
@@ -61,7 +58,19 @@ class ActivitiesController < ApplicationController
     render_404 I18n.t(:error_can_not_find_all_resources)
   end
 
+  def menu
+    render layout: nil
+  end
+
   private
+
+  def set_activity
+    @activity = Activities::Fetcher.new(User.current,
+                                        project: @project,
+                                        with_subprojects: @with_subprojects,
+                                        author: @author,
+                                        scope: activity_scope)
+  end
 
   def verify_activities_module_activated
     render_403 if @project && !@project.module_enabled?('activity')
@@ -79,8 +88,11 @@ class ActivitiesController < ApplicationController
   end
 
   def determine_subprojects
-    @with_subprojects = if params[:with_subprojects].nil?
+    @with_subprojects = if params[:with_subprojects].nil? &&
+                          (session[:activity].nil? || session[:activity][:with_subprojects].nil?)
                           Setting.display_subprojects_work_packages?
+                        elsif params[:with_subprojects].nil?
+                          session[:activity][:with_subprojects]
                         else
                           params[:with_subprojects] == '1'
                         end
@@ -108,7 +120,7 @@ class ActivitiesController < ApplicationController
     if params[:event_types]
       params[:event_types]
     elsif session[:activity]
-      session[:activity]
+      session[:activity][:scope]
     elsif @author.nil?
       :default
     else
@@ -121,6 +133,7 @@ class ActivitiesController < ApplicationController
   end
 
   def set_session
-    session[:activity] = @activity.scope
+    session[:activity] = { scope: @activity.scope,
+                           with_subprojects: @with_subprojects }
   end
 end
